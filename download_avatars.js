@@ -2,6 +2,14 @@ var request = require('request');
 var fs      = require('fs');
 var secret  = require('./secrets');
 
+var userInputRepoOwner = process.argv[2];
+var userInputRepoName = process.argv[3];
+
+console.log(process.argv);
+
+console.log(userInputRepoOwner, 'repo owner');
+console.log(userInputRepoName, 'repoName')
+
 console.log('Welcome to the GitHub Avatar Downloader!');
 
 function getRepoContributors(repoOwner, repoName, cb) {
@@ -38,27 +46,21 @@ function downloadImageByURL(avatarUrl, filePath) {
     .pipe(fs.createWriteStream(filePath));
 }
 
-// downloadImageByURL("https://avatars2.githubusercontent.com/u/2741?v=3&s=466", "avatars/kvirani.jpg")
-getRepoContributors("jquery", "jquery", function(err, result) {
-  console.log("Errors:", err);
-  console.log(result);
+if (userInputRepoOwner || userInputRepoName) {
+  getRepoContributors(userInputRepoOwner, userInputRepoName, function(err, result) {
+    console.log("Errors:", err);
 
-  for (variable in result) {
-    // statement
-    // console.log(result[variable].avatar_url);
-    let el = result[variable];
-    let avatarUrl = el.avatar_url;
-    let filePath = `avatars/${el.login}.jpg`;
-    downloadImageByURL(avatarUrl, filePath);
-  }
+    for (variable in result) {
+      // statement
+      // console.log(result[variable].avatar_url);
+      let el = result[variable];
+      let avatarUrl = el.avatar_url;
+      let filePath = `avatars/${el.login}.jpg`;
+      downloadImageByURL(avatarUrl, filePath);
+    }
 
-  // for (el of result) {
-  //   console.log(el, 'EL');
-  //   // statement
-  //   let avatarUrl = el.avatar_url;
-  //   let filePath = `avatars/${el.login}.jpg`;
-  //   downloadImageByURL(avatarUrl, filePath);
-  // }
+  });
+} else {
+  console.error('INVALID INPUT');
+}
 
-
-});
